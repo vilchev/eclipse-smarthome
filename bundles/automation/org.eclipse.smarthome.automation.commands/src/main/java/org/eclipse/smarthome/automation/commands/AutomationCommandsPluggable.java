@@ -39,8 +39,8 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
  *
  */
 @SuppressWarnings("rawtypes")
-public class AutomationCommandsPluggable extends AutomationCommands implements ServiceTrackerCustomizer,
-        ConsoleCommandExtension {
+public class AutomationCommandsPluggable extends AutomationCommands
+        implements ServiceTrackerCustomizer, ConsoleCommandExtension {
 
     /**
      * This constant defines the command group name.
@@ -118,7 +118,8 @@ public class AutomationCommandsPluggable extends AutomationCommands implements S
      *      java.lang.Object)
      */
     @Override
-    public void modifiedService(ServiceReference reference, Object service) {}
+    public void modifiedService(ServiceReference reference, Object service) {
+    }
 
     /**
      * @see org.osgi.util.tracker.ServiceTrackerCustomizer#removedService(org.osgi.framework.ServiceReference,
@@ -168,20 +169,20 @@ public class AutomationCommandsPluggable extends AutomationCommands implements S
      */
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(new String[] { buildCommandUsage(LIST_MODULE_TYPES + " [-st] <filter>",
-                "lists all Module Types. If filter is present, lists only matching Module Types"), buildCommandUsage(
-                        LIST_TEMPLATES + " [-st] <filter>",
-                        "lists all Templates. If filter is present, lists only matching Templates"), buildCommandUsage(
-                                LIST_RULES + " [-st] <filter>",
-                                "lists all Rules. If filter is present, lists only matching Rules"), buildCommandUsage(
-                                        REMOVE_MODULE_TYPES + " [-st] <url>",
-                                        "Removes the Module Types, loaded from the given url"), buildCommandUsage(
-                                                REMOVE_TEMPLATES + " [-st] <url>",
-                                                "Removes the Templates, loaded from the given url"), buildCommandUsage(
-                                                        REMOVE_RULE + " [-st] <uid>",
-                                                        "Removes the rule, specified by given UID"), buildCommandUsage(
-                                                                REMOVE_RULES + " [-st] <filter>",
-                                                                "Removes the rules. If filter is present, removes only matching Rules"),
+        return Arrays.asList(new String[] {
+                buildCommandUsage(LIST_MODULE_TYPES + " [-st] <filter>",
+                        "lists all Module Types. If filter is present, lists only matching Module Types"),
+                buildCommandUsage(LIST_TEMPLATES + " [-st] <filter>",
+                        "lists all Templates. If filter is present, lists only matching Templates"),
+                buildCommandUsage(LIST_RULES + " [-st] <filter>",
+                        "lists all Rules. If filter is present, lists only matching Rules"),
+                buildCommandUsage(REMOVE_MODULE_TYPES + " [-st] <url>",
+                        "Removes the Module Types, loaded from the given url"),
+                buildCommandUsage(REMOVE_TEMPLATES + " [-st] <url>",
+                        "Removes the Templates, loaded from the given url"),
+                buildCommandUsage(REMOVE_RULE + " [-st] <uid>", "Removes the rule, specified by given UID"),
+                buildCommandUsage(REMOVE_RULES + " [-st] <filter>",
+                        "Removes the rules. If filter is present, removes only matching Rules"),
                 buildCommandUsage(IMPORT_MODULE_TYPES + " [-p] <parserType> [-st] <url>",
                         "Imports Module Types from given url. If parser type missing, \"json\" parser will be set as default"),
                 buildCommandUsage(IMPORT_TEMPLATES + " [-p] <parserType> [-st] <url>",
@@ -193,7 +194,12 @@ public class AutomationCommandsPluggable extends AutomationCommands implements S
                 buildCommandUsage(EXPORT_TEMPLATES + " [-p] <parserType> [-st] <file>",
                         "Exports Templates in a file. If parser type missing, \"json\" parser will be set as default"),
                 buildCommandUsage(EXPORT_RULES + " [-p] <parserType> [-st] <file>",
-                        "Exports Rules in a file. If parser type missing, \"json\" parser will be set as default") });
+                        "Exports Rules in a file. If parser type missing, \"json\" parser will be set as default"),
+                buildCommandUsage(ENABLE_RULE + " [-st] <uid> <enable>",
+                        "Enables the Rule, specified by given UID. If enable parameter is missing, "
+                                + "the result of the command will be visualization of enabled/disabled state of the rule, "
+                                + "if its value is \"true\" or \"false\", "
+                                + "the result of the command will be to set enable/disable on the Rule.") });
     }
 
     /**
@@ -341,6 +347,9 @@ public class AutomationCommandsPluggable extends AutomationCommands implements S
         if (command.equalsIgnoreCase(REMOVE_RULES)) {
             return new AutomationCommandRemove(REMOVE_RULES, params, RULE_REGISTRY, this);
         }
+        if (command.equalsIgnoreCase(ENABLE_RULE)) {
+            return new AutomationCommandEnableRule(ENABLE_RULE, params, RULE_REGISTRY, this);
+        }
         return null;
     }
 
@@ -390,6 +399,14 @@ public class AutomationCommandsPluggable extends AutomationCommands implements S
         } else {
             return null;
         }
+    }
+
+    @Override
+    public void setEnabled(String uid, boolean isEnabled) {
+        if (ruleReg != null) {
+            ruleReg.setEnabled(uid, isEnabled);
+        }
+
     }
 
 }
