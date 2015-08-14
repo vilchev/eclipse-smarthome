@@ -367,7 +367,7 @@ public abstract class AutomationCommands {
      * @return a {@link Status} object, representing understandable for the user message containing information on the
      *         outcome of the export.
      */
-    public Status exportTemplates(String parserType, Set<Template> set, File file) {
+    public Status exportTemplates(String parserType, Set<RuleTemplate> set, File file) {
         if (templateProvider != null) {
             return templateProvider.exportTemplates(parserType, set, file);
         }
